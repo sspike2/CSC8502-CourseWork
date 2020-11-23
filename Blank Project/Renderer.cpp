@@ -1,4 +1,5 @@
 #include"Renderer.h"
+#include <algorithm>
 const int LIGHT_NUM = 32;
 Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 {
@@ -14,13 +15,19 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 		TEXTUREDIR"Barren RedsDOT3.JPG", SOIL_LOAD_AUTO,
 		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
+
+
+
+
 	SetTextureRepeating(earthTex, true);
 	SetTextureRepeating(earthBump, true);
 
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
-	camera = new Camera(-45.0f, 0.0f,
-		heightmapSize * Vector3(0.5f, 5.0f, 0.5f), 300);
+	//camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 5.0f, 0.5f), 300);
+	camera = new Camera(0.0f, -90.0f, (Vector3(0, 300, 750.0f)), 300);
+
+
 	pointLights = new Light[LIGHT_NUM];
 
 	for (int i = 0; i < LIGHT_NUM; ++i)
@@ -36,6 +43,19 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 			1));
 		l.SetRadius(250.0f + (rand() % 250));
 	}
+
+	//Light& l = pointLights[LIGHT_NUM - 1];
+	//l.SetPosition(Vector3(0, 1000.0f, 0));
+
+	//l.SetColour(Vector4(1, 0, 0, 1));
+	//l.SetRadius(10000.0f);
+
+
+
+
+
+
+
 	sceneShader = new Shader("bumpvertex.glsl", // reused !
 		"bufferFragment.glsl");
 	pointlightShader = new Shader("pointlightvertex.glsl",
@@ -54,10 +74,50 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	glGenFramebuffers(1, &bufferFBO);
 	glGenFramebuffers(1, &pointLightFBO);
 
+
+
+
+	root = new SceneNode();
+
+	for (int i = 0; i < 5; ++i)
+	{
+		SceneNode* s = new SceneNode();
+		s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
+		s->SetTransform(Matrix4::Translation(
+			Vector3(0, 100.0f, -300.0f + 100.0f + 100 * i)));
+		//s->SetTransform(Matrix4::Scale(Vector3(100, 100, 100)));
+		s->SetModelScale(Vector3(100.0f, 100.0f, 100.0f));
+		s->SetBoundingRadius(100.0f);
+		s->SetMesh(quad);
+		s->SetTexture(earthTex);
+		root->AddChild(s);
+	}
+
+
+
+	SceneNode* s = new SceneNode();
+	s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
+	s->SetTransform(Matrix4::Translation(Vector3(000.0f, 00, -100.0f)) *
+		Matrix4::Rotation(-90, Vector3(1, 0, 0)));
+	//s->SetTransform();
+	s->SetModelScale(Vector3(10000.0f, 10000.0f, 10000.0f));
+	s->SetBoundingRadius(100.0f);
+	s->SetMesh(quad);
+	s->SetTexture(earthTex);
+	root->AddChild(s);
+
+
+
+
+
+
+
+
 	GLenum buffers[2] = {
 		GL_COLOR_ATTACHMENT0 ,
 		GL_COLOR_ATTACHMENT1
 	};
+
 	// Generate our scene depth texture...
 	GenerateScreenTexture(bufferDepthTex, true);
 	GenerateScreenTexture(bufferColourTex);
@@ -140,13 +200,24 @@ void Renderer::GenerateScreenTexture(GLuint& into, bool depth)
 void Renderer::UpdateScene(float dt)
 {
 	camera->UpdateCamera(dt);
+	viewMatrix = camera->BuildViewMatrix();
+	//frameFrustum.FromMatrix(projMatrix * viewMatrix);
+	root->Update(dt);
+
+
 }
 void Renderer::RenderScene()
 {
+	BuildNodeLists(root);
+	SortNodeLists();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	FillBuffers();
+	ClearNodeLists();
 	DrawPointLights();
 	CombineBuffers();
+
+
+
 }
 void Renderer::FillBuffers()
 {
@@ -165,6 +236,9 @@ void Renderer::FillBuffers()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, earthBump);
 
+	DrawNodes();
+
+
 	modelMatrix.ToIdentity();
 	viewMatrix = camera->BuildViewMatrix();
 	projMatrix = Matrix4::Perspective(1.0f, 10000.0f,
@@ -172,7 +246,7 @@ void Renderer::FillBuffers()
 
 	UpdateShaderMatrices();
 
-	heightMap->Draw();
+	//heightMap->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -223,7 +297,6 @@ void Renderer::DrawPointLights()
 	glDepthMask(GL_TRUE);
 
 	glClearColor(0.2f, 0.2f, 0.2f, 1);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 void Renderer::CombineBuffers()
@@ -250,4 +323,95 @@ void Renderer::CombineBuffers()
 	glBindTexture(GL_TEXTURE_2D, lightSpecularTex);
 
 	quad->Draw();
+}
+
+void Renderer::BuildNodeLists(SceneNode* from)
+{
+	//if (frameFrustum.InsideFrustum(*from))
+	//{
+	Vector3 dir = from->GetWorldTransform().GetPositionVector() -
+		camera->GetPosition();
+	from->SetCameraDistance(Vector3::Dot(dir, dir));
+
+	if (from->GetColour().w < 1.0f)
+	{
+		transparentNodeList.push_back(from);
+
+	}
+	else
+	{
+		nodeList.push_back(from);
+
+	}
+
+	//}
+
+	for (vector < SceneNode* >::const_iterator i =
+		from->GetChildIteratorStart();
+		i != from->GetChildIteratorEnd(); ++i)
+	{
+		BuildNodeLists((*i));
+
+	}
+}
+
+
+void Renderer::SortNodeLists()
+{
+	std::sort(transparentNodeList.rbegin(), // note the r!
+		transparentNodeList.rend(), // note the r!
+		SceneNode::CompareByCameraDistance);
+	std::sort(nodeList.begin(),
+		nodeList.end(),
+		SceneNode::CompareByCameraDistance);
+
+}
+
+void Renderer::DrawNodes()
+{
+	for (const auto& i : nodeList)
+	{
+		DrawNode(i);
+
+	}
+	for (const auto& i : transparentNodeList)
+	{
+		DrawNode(i);
+
+	}
+
+}
+
+
+void Renderer::DrawNode(SceneNode* n)
+{
+	if (n->GetMesh())
+	{
+		Matrix4 model = n->GetWorldTransform() *
+			Matrix4::Scale(n->GetModelScale());
+		glUniformMatrix4fv(
+			glGetUniformLocation(sceneShader->GetProgram(),
+				"modelMatrix"), 1, false, model.values);
+
+		glUniform4fv(glGetUniformLocation(sceneShader->GetProgram(),
+			"nodeColour"), 1, (float*)&n->GetColour());
+
+		earthTex = n->GetTexture();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, earthTex);
+
+		glUniform1i(glGetUniformLocation(sceneShader->GetProgram(),
+			"useTexture"), earthTex);
+
+		n->Draw(*this);
+
+	}
+}
+
+
+void Renderer::ClearNodeLists()
+{
+	transparentNodeList.clear();
+	nodeList.clear();
+
 }

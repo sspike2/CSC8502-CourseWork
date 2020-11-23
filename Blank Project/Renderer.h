@@ -1,8 +1,9 @@
 #pragma once
 # include "../nclgl/OGLRenderer.h"
-# include "../nclgl/Light.h"
 # include "../nclgl/Camera.h"
 # include "../nclgl/HeightMap.h"
+# include "../nclgl/SceneNode.h"
+# include "../nclgl/Frustum.h"
 
 class Renderer : public OGLRenderer
 {
@@ -39,4 +40,25 @@ protected:
 	Camera* camera; // Our usual camera
 	GLuint earthTex;
 	GLuint earthBump;
+
+
+
+
+	void BuildNodeLists(SceneNode* from);
+	void SortNodeLists();
+	void ClearNodeLists();
+	void DrawNodes();
+	void DrawNode(SceneNode* n);
+
+
+	SceneNode* root;
+
+
+	//Frustum frameFrustum;
+
+	vector < SceneNode*> transparentNodeList;
+	vector < SceneNode*> nodeList;
+
+
+
 };

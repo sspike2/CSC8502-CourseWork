@@ -3,6 +3,8 @@
 
 
 int main() {
+
+	srand(time(NULL));
 	Window w("Blank Project!", 1280,720,false); //This is all boring win32 window creation stuff!
 	if(!w.HasInitialised()) {
 		return -1;

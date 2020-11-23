@@ -28,7 +28,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
 	camera = new Camera(-45.0f, 0.0f,
-		heightmapSize * Vector3(0.5f, 5.0f, 0.5f));
+		heightmapSize * Vector3(0.5f, 5.0f, 0.5f),50);
 	light = new Light(heightmapSize * Vector3(0.5f, 1.5f, 0.5f),
 		Vector4(1, 1, 0, 1), heightmapSize.x * 0.5f);
 

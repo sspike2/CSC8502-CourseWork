@@ -1,0 +1,73 @@
+﻿'Blank Project.exe' (Win32): Loaded 'D:\cpp projects\CSC8502-CourseWork\x64\Debug\Blank Project.exe'. Symbols loaded.
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\ntdll.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\kernel32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\KernelBase.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\user32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\win32u.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\opengl32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\gdi32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\gdi32full.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\advapi32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\msvcp_win.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\sechost.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbase.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\rpcrt4.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\combase.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\bcryptprimitives.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\glu32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140d.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\msvcp140d.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140_1d.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbased.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\DXCore.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\cfgmgr32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\imm32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\uxtheme.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\msctf.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\oleaut32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\ProgramData\A-Volute\A-Volute.SonicStudio3\Modules\ScheduledModules\x64\A-Volute.SonicStudio3DevProps2.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\ole32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\ws2_32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\shlwapi.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\shell32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\SHCore.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\windows.storage.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\profapi.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\powrprof.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\umpdc.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\kernel.appcore.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\cryptsp.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\TextInputFramework.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\CoreMessaging.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\CoreUIComponents.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\ntmarta.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. 
+'Blank Project.exe' (Win32): Unloaded 'C:\Windows\System32\WinTypes.dll'
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\iertutil.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\nvam.inf_amd64_f92a5acfce8259e8\nvoglv64.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\setupapi.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\bcrypt.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\wtsapi32.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\version.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\devobj.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\wintrust.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\msasn1.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\crypt32.dll'. 
+The thread 0x71f8 has exited with code 0 (0x0).
+The thread 0x690 has exited with code 0 (0x0).
+The thread 0x66b8 has exited with code 0 (0x0).
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\nvspcap64.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\dwmapi.dll'. 
+'Blank Project.exe' (Win32): Loaded 'C:\Windows\System32\winsta.dll'. 
+The thread 0x5f5c has exited with code 0 (0x0).
+The thread 0x7c54 has exited with code 0 (0x0).
+The thread 0x94c has exited with code 0 (0x0).
+The thread 0x1468 has exited with code 0 (0x0).
+The thread 0x433c has exited with code 0 (0x0).
+The thread 0x7f2c has exited with code 0 (0x0).
+The thread 0x4bd4 has exited with code 0 (0x0).
+The thread 0x8418 has exited with code 0 (0x0).
+The thread 0x27b8 has exited with code 0 (0x0).
+The program '[25676] Blank Project.exe' has exited with code 0 (0x0).
