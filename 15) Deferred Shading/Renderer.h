@@ -37,6 +37,6 @@ protected:
 	Mesh* sphere; // Light volume
 	Mesh* quad; // To draw a full - screen quad
 	Camera* camera; // Our usual camera
-	GLuint earthTex;
-	GLuint earthBump;
+	GLuint roadTex;
+	GLuint roadBump;
 };

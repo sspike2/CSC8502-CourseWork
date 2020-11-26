@@ -11,7 +11,10 @@ public:
 	SceneNode(Mesh* m = NULL, Vector4 colour = Vector4(1, 1, 1, 1));
 	~SceneNode(void);
 
+	char* name;
+
 	void SetTransform(const Matrix4& matrix) { transform = matrix; }
+
 	const Matrix4& GetTransform() const { return transform; }
 	Matrix4 GetWorldTransform() const { return worldTransform; }
 
@@ -50,17 +53,20 @@ public:
 	void SetTexture(GLuint tex) { texture = tex; }
 	GLuint GetTexture() const { return texture; }
 
+
+	//void SetTextureTiling(Vector3 dfsdf){TextureMatrix}
+
 	static bool CompareByCameraDistance(SceneNode* a, SceneNode* b)
 	{
-		return (a->distanceFromCamera <
-			b->distanceFromCamera) ? true : false;
+		return (a->distanceFromCamera < b->distanceFromCamera) ? true : false;
 	}
 
 
 
 
 
-
+	const Matrix4& GetTextureMatrix() const { return textureMatrix; }
+	void SetTextureMatrix(const Matrix4& textureMatrix) { this->textureMatrix = textureMatrix; }
 
 
 protected:
@@ -74,4 +80,7 @@ protected:
 	float distanceFromCamera;
 	float boundingRadius;
 	GLuint texture;
+
+
+	Matrix4 textureMatrix;
 };

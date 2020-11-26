@@ -175,6 +175,37 @@ void OGLRenderer::SetTextureRepeating(GLuint target, bool repeating)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void OGLRenderer::SetTextureRepeating(GLuint target, bool repeating, bool isHorizontalAxis)
+{
+	glBindTexture(GL_TEXTURE_2D, target);
+	if (isHorizontalAxis)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+			repeating ? GL_REPEAT : GL_CLAMP);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+			repeating ? GL_REPEAT : GL_CLAMP);
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+void OGLRenderer::SetTextureFiltering(GLuint target, bool enableFiltering)
+{
+	glBindTexture(GL_TEXTURE_2D, target);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		enableFiltering ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		enableFiltering ? GL_LINEAR : GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+
 /*
 Returns TRUE if everything in the constructor has gone to plan.
 Check this to end the application if necessary...
@@ -254,6 +285,9 @@ void OGLRenderer::SetShaderLight(const Light& l)
 	glUniform1f(glGetUniformLocation(currentShader->GetProgram(),
 		"lightRadius"), l.GetRadius());
 }
+
+
+
 
 
 

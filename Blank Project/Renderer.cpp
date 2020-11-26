@@ -3,29 +3,18 @@
 const int LIGHT_NUM = 32;
 Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 {
+
 	sphere = Mesh::LoadFromMeshFile("Sphere.msh");
 	quad = Mesh::GenerateQuad();
-	heightMap = new HeightMap(TEXTUREDIR"noise.png");
-
-	earthTex = SOIL_load_OGL_texture(
-		TEXTUREDIR"Barren Reds.JPG", SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-
-	earthBump = SOIL_load_OGL_texture(
-		TEXTUREDIR"Barren RedsDOT3.JPG", SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	cube = Mesh::LoadFromMeshFile("cube.msh");
+	streetLightMesh = Mesh::LoadFromMeshFile("/Sush/StreetLight.msh");
 
 
 
+	InitializeTextures();
 
+	camera = new Camera(0.0f, 0.0f, (Vector3(-1000, 300, 0)), 600);
 
-	SetTextureRepeating(earthTex, true);
-	SetTextureRepeating(earthBump, true);
-
-	Vector3 heightmapSize = heightMap->GetHeightmapSize();
-
-	//camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 5.0f, 0.5f), 300);
-	camera = new Camera(0.0f, -90.0f, (Vector3(0, 300, 750.0f)), 300);
 
 
 	pointLights = new Light[LIGHT_NUM];
@@ -33,9 +22,9 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	for (int i = 0; i < LIGHT_NUM; ++i)
 	{
 		Light& l = pointLights[i];
-		l.SetPosition(Vector3(rand() % (int)heightmapSize.x,
+		l.SetPosition(Vector3(rand() % 5000,
 			150.0f,
-			rand() % (int)heightmapSize.z));
+			rand() % 5000));
 
 		l.SetColour(Vector4(0.5f + (float)(rand() / (float)RAND_MAX),
 			0.5f + (float)(rand() / (float)RAND_MAX),
@@ -44,71 +33,62 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 		l.SetRadius(250.0f + (rand() % 250));
 	}
 
-	//Light& l = pointLights[LIGHT_NUM - 1];
-	//l.SetPosition(Vector3(0, 1000.0f, 0));
-
-	//l.SetColour(Vector4(1, 0, 0, 1));
-	//l.SetRadius(10000.0f);
-
-
-
-
-
-
-
 	sceneShader = new Shader("bumpvertex.glsl", // reused !
 		"bufferFragment.glsl");
+	//sceneShader = new Shader("TexturedVertex.glsl", // reused !
+		//"TexturedFragment.glsl");
+
 	pointlightShader = new Shader("pointlightvertex.glsl",
 		"pointlightfragment.glsl");
+
+	//pointlightShader = new Shader("TexturedVertex.glsl", // reused !
+		//"TexturedFragment.glsl");
+
 	combineShader = new Shader("combinevert.glsl",
 		"combinefrag.glsl");
+
+	//combineShader = new Shader("TexturedVertex.glsl",
+		//"TexturedFragment.glsl");
 
 	bool scene, point, combine;
 	scene = sceneShader->LoadSuccess();
 	point = pointlightShader->LoadSuccess();
 	combine = combineShader->LoadSuccess();
+
+
 	if (!scene || !point || !combine)
 	{
 		return;
 	}
+
 	glGenFramebuffers(1, &bufferFBO);
 	glGenFramebuffers(1, &pointLightFBO);
 
 
 
 
-	root = new SceneNode();
 
-	for (int i = 0; i < 5; ++i)
-	{
-		SceneNode* s = new SceneNode();
-		s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
-		s->SetTransform(Matrix4::Translation(
-			Vector3(0, 100.0f, -300.0f + 100.0f + 100 * i)));
-		//s->SetTransform(Matrix4::Scale(Vector3(100, 100, 100)));
-		s->SetModelScale(Vector3(100.0f, 100.0f, 100.0f));
-		s->SetBoundingRadius(100.0f);
-		s->SetMesh(quad);
-		s->SetTexture(earthTex);
-		root->AddChild(s);
-	}
-
-
-
-	SceneNode* s = new SceneNode();
-	s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
-	s->SetTransform(Matrix4::Translation(Vector3(000.0f, 00, -100.0f)) *
-		Matrix4::Rotation(-90, Vector3(1, 0, 0)));
-	//s->SetTransform();
-	s->SetModelScale(Vector3(10000.0f, 10000.0f, 10000.0f));
-	s->SetBoundingRadius(100.0f);
-	s->SetMesh(quad);
-	s->SetTexture(earthTex);
-	root->AddChild(s);
+	//for (int i = 0; i < 5; ++i)
+	//{
+	//	SceneNode* s = new SceneNode();
+	//	s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
+	//	s->SetTransform(Matrix4::Translation(
+	//		Vector3(0, 100.0f, -300.0f + 100.0f + 100 * i)));
+	//	//s->SetTransform(Matrix4::Scale(Vector3(100, 100, 100)));
+	//	s->SetModelScale(Vector3(100.0f, 100.0f, 100.0f));
+	//	s->SetBoundingRadius(100.0f);
+	//	s->SetMesh(quad);
+	//	s->SetTexture(earthTex);
+	//	root->AddChild(s);
+	//}
 
 
 
 
+
+	GenerateRoadSegments();
+	GenerateBuildings();
+	GenerateStreetLights();
 
 
 
@@ -165,7 +145,6 @@ Renderer ::~Renderer(void)
 	delete combineShader;
 	delete pointlightShader;
 
-	delete heightMap;
 	delete camera;
 	delete sphere;
 	delete quad;
@@ -208,6 +187,9 @@ void Renderer::UpdateScene(float dt)
 }
 void Renderer::RenderScene()
 {
+
+
+
 	BuildNodeLists(root);
 	SortNodeLists();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -230,18 +212,22 @@ void Renderer::FillBuffers()
 	glUniform1i(
 		glGetUniformLocation(sceneShader->GetProgram(), "bumpTex"), 1);
 
+
+
+
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, earthTex);
+	glBindTexture(GL_TEXTURE_2D, roadTex);
+
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, earthBump);
+	glBindTexture(GL_TEXTURE_2D, roadBump);
 
 	DrawNodes();
 
 
 	modelMatrix.ToIdentity();
 	viewMatrix = camera->BuildViewMatrix();
-	projMatrix = Matrix4::Perspective(1.0f, 10000.0f,
+	projMatrix = Matrix4::Perspective(1.0f, 1000000.0f,
 		(float)width / (float)height, 45.0f);
 
 	UpdateShaderMatrices();
@@ -289,6 +275,17 @@ void Renderer::DrawPointLights()
 		SetShaderLight(l);
 		sphere->Draw();
 	}
+
+
+	for (int i = 0; i < numofStreetLightsEachSide * 2; ++i)
+	{
+		Light& l = streetLightLights[i];
+		SetShaderLight(l);
+		sphere->Draw();
+	}
+
+
+
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
@@ -396,12 +393,16 @@ void Renderer::DrawNode(SceneNode* n)
 		glUniform4fv(glGetUniformLocation(sceneShader->GetProgram(),
 			"nodeColour"), 1, (float*)&n->GetColour());
 
-		earthTex = n->GetTexture();
+		glUniformMatrix4fv(glGetUniformLocation(currentShader->GetProgram(), "textureMatrix"),
+			1, false, n->GetTextureMatrix().values);
+
+
+		roadTex = n->GetTexture();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, earthTex);
+		glBindTexture(GL_TEXTURE_2D, roadTex);
 
 		glUniform1i(glGetUniformLocation(sceneShader->GetProgram(),
-			"useTexture"), earthTex);
+			"useTexture"), roadTex);
 
 		n->Draw(*this);
 
@@ -413,5 +414,227 @@ void Renderer::ClearNodeLists()
 {
 	transparentNodeList.clear();
 	nodeList.clear();
+
+}
+
+void Renderer::InitializeTextures()
+{
+	roadTex = SOIL_load_OGL_texture(
+		TEXTUREDIR"/Sush/ground_asphalt_synth_11.png", SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+	roadBump = SOIL_load_OGL_texture(
+		TEXTUREDIR"/Sush/ground_asphalt_synth_11_Bump.png", SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+	buildingTex = SOIL_load_OGL_texture(
+		TEXTUREDIR"/Sush/window1.png", SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+	buildingTex2 = SOIL_load_OGL_texture(
+		TEXTUREDIR"/Sush/window3.png", SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+
+	streetLightTex = SOIL_load_OGL_texture(
+		TEXTUREDIR"/Sush/mat24.png", SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+
+
+
+
+	SetTextureFiltering(roadTex, true);
+	SetTextureFiltering(buildingTex, true);
+	SetTextureFiltering(buildingTex2, true);
+
+	SetTextureRepeating(roadTex, true, false);
+	SetTextureRepeating(roadBump, true, false);
+
+	SetTextureRepeating(buildingTex, true);
+	SetTextureRepeating(buildingTex2, true);
+
+}
+
+
+void Renderer::GenerateRoadSegments()
+{
+	for (int i = 0; i < numOfRoadSegments; i++)
+	{
+
+
+		SceneNode* road = new SceneNode();
+		road->SetColour(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		road->SetTransform(Matrix4::Translation(Vector3(00, 00, -(i * 10000.0f) - 10000))
+			* Matrix4::Rotation(-90, Vector3(1, 0, 0))
+		);
+		//s->SetTransform(Matrix4::Rotation(-90, Vector3(0, 0, 1)));
+		road->SetModelScale(Vector3(10000.0f, 10000.0f, 10000.0f));
+		//s->SetBoundingRadius(100.0f);
+		road->SetMesh(quad);
+		road->SetTexture(roadTex);
+
+		road->SetTextureMatrix(Matrix4::Scale(Vector3(10, 10, 1))
+			* Matrix4::Translation(Vector3(0.5f, 0.5f, 0.0f))
+			* Matrix4::Rotation(180, Vector3(0, 0, 1))
+		);
+
+		root->name = "road";
+		root->AddChild(road);
+	}
+}
+
+void Renderer::GenerateBuildings()
+{
+	// right side of road
+	for (int i = 0; i < numOfBuildingsOnEachSide; i++)
+	{
+		SceneNode* building = new SceneNode();
+		building->SetMesh(cube);
+		building->SetTexture(rand() % 2 == 0 ? buildingTex : buildingTex2);
+
+		//building->SetTexture(buildingTex2);
+
+		float yScale = 10000 + rand() % 20000;
+
+		float zpos = 0;
+		if (i != 0)
+		{
+			zpos = -7000 * i;
+			float offset = (rand() % 1000) + 1000;
+			zpos = zpos + offset;
+		}
+
+		building->SetModelScale(Vector3(5000, yScale, 5000));
+		building->SetTransform(Matrix4::Translation(Vector3(2800 + rand() % 200,
+			(yScale / 2),
+			zpos))
+		);
+
+		building->SetTextureMatrix(Matrix4::Scale(Vector3(10 + rand() % 30, 50 + rand() % 500, 1))
+			//* Matrix4::Translation(Vector3(0.5f, 0.5f, 0.0f))
+			//* Matrix4::Rotation(180, Vector3(0, 0, 1))
+		);
+		root->name = "building";
+		root->AddChild(building);
+	}
+
+	//left side of road
+	for (int i = 0; i < numOfBuildingsOnEachSide; i++)
+	{
+		SceneNode* building = new SceneNode();
+		building->SetMesh(cube);
+		building->SetTexture(rand() % 2 == 0 ? buildingTex : buildingTex2);
+
+		float yScale = 10000 + rand() % 20000;
+		float zpos = 0;
+		if (i != 0)
+		{
+			zpos = -7000 * i;
+			float offset = (rand() % 1000) + 1000;
+			zpos = zpos + offset;
+		}
+
+		building->SetModelScale(Vector3(5000, yScale, 5000));
+		building->SetTransform(Matrix4::Translation(Vector3(-5000,
+			(yScale / 2),
+			zpos))
+		);
+
+		building->SetTextureMatrix(Matrix4::Scale(Vector3(10 + rand() % 30, 50 + rand() % 500, 1))
+			//* Matrix4::Translation(Vector3(0.5f, 0.5f, 0.0f))
+			//* Matrix4::Rotation(180, Vector3(0, 0, 1))
+		);
+		root->name = "building";
+		root->AddChild(building);
+	}
+
+}
+
+
+void Renderer::GenerateStreetLights()
+{
+
+
+
+	streetLightLights = new Light[numofStreetLightsEachSide * 2];
+
+	// left streetlights
+	for (int i = 0; i < numofStreetLightsEachSide; i++)
+	{
+
+		SceneNode* streetlight = new SceneNode();
+		streetlight->SetColour(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		Vector3 pos = Vector3(-2000, 00, -2000 * i);
+		streetlight->SetTransform(Matrix4::Translation(pos)
+			//* Matrix4::Rotation(-90, Vector3(1, 0, 0))
+		);
+		//s->SetTransform(Matrix4::Rotation(-90, Vector3(0, 0, 1)));
+		streetlight->SetModelScale(Vector3(500.0f, 500.0f, 500.0f));
+		//s->SetBoundingRadius(100.0f);
+		streetlight->SetMesh(streetLightMesh);
+		streetlight->SetTexture(streetLightTex);
+
+		streetlight->SetTextureMatrix(
+			//Matrix4::Scale(Vector3(10, 10, 1))
+			Matrix4::Translation(Vector3(0.5f, 0.5f, 0.0f))
+			//Matrix4::Rotation(180, Vector3(0, 0, 1))
+		);
+
+		root->name = "streetLight";
+		root->AddChild(streetlight);
+		pos.y += 500.0f;
+
+		Light& l = streetLightLights[i];
+		l.SetPosition(pos);
+		l.SetColour(Vector4(.23f, .74f, .74f, 1));
+		l.SetRadius(lightRadius);
+
+	}
+
+
+
+	// right streetlights
+	for (int i = 0; i < numofStreetLightsEachSide; i++)
+	{
+
+		SceneNode* streetlight = new SceneNode();
+		streetlight->SetColour(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+		streetlight->SetTransform(Matrix4::Translation((Vector3(0, 00, (-2000 * i) - 750)))
+			* Matrix4::Rotation(180, Vector3(0, 1, 0))
+		);
+		//s->SetTransform(Matrix4::Rotation(-90, Vector3(0, 0, 1)));
+		streetlight->SetModelScale(Vector3(500.0f, 500.0f, 500.0f));
+		//s->SetBoundingRadius(100.0f);
+		streetlight->SetMesh(streetLightMesh);
+		streetlight->SetTexture(streetLightTex);
+
+		streetlight->SetTextureMatrix(
+			//Matrix4::Scale(Vector3(10, 10, 1))
+			Matrix4::Translation(Vector3(0.5f, 0.5f, 0.0f))
+			//Matrix4::Rotation(180, Vector3(0, 0, 1))
+		);
+
+		root->name = "streetLight";
+		root->AddChild(streetlight);
+
+
+		Light& l = streetLightLights[i + numofStreetLightsEachSide];
+		l.SetPosition(Vector3(0, 500.0f, (-2000 * i) - 750));
+		l.SetColour(Vector4(.23f, .74f, .74f, 1));
+		l.SetRadius(lightRadius);
+	}
+
+
+
+
+
+
+
+
+
+
 
 }

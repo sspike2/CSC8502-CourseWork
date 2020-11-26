@@ -41,11 +41,13 @@ void Camera::UpdateCamera(float dt)
 	{
 		position += right * (speed * dt);
 	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SHIFT))
+
+	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SPACE))
 	{
 		position.y += (speed * dt);
 	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SPACE))
+
+	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SHIFT))
 	{
 		position.y -= (speed * dt);
 	}

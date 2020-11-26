@@ -63,6 +63,8 @@ protected:
 	void			UpdateShaderMatrices();
 	void			BindShader(Shader*s);
 	void			SetTextureRepeating ( GLuint target , bool state );
+	void			SetTextureRepeating(GLuint target, bool state, bool isHorizontalAxis);
+	void            SetTextureFiltering(GLuint target, bool enableFiltering);
 	void            SetShaderLight ( const Light& l);
 
 	void StartDebugGroup(const std::string& s) {
