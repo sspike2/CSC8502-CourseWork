@@ -26,7 +26,15 @@ int main() {
 			renderer.toggleFiltering();
 		}*/
 
+		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_P))
+		{
+			renderer.ToggleFogType();
+		}
 
+		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_O))
+		{
+			renderer.TogglePostProcessing();
+		}
 
 
 

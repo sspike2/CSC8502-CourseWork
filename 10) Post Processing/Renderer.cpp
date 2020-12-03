@@ -3,7 +3,7 @@ const int POST_PASSES = 10;
 Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 {
 	camera = new Camera(-25.0f, 225.0f,
-		Vector3(-150.0f, 250.0f, -150.0f));
+		Vector3(-150.0f, 250.0f, -150.0f),300);
 	quad = Mesh::GenerateQuad();
 
 	heightMap = new HeightMap(TEXTUREDIR "noise.png");
@@ -129,6 +129,7 @@ void Renderer::DrawPostProcess()
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(glGetUniformLocation(
 		processShader->GetProgram(), "sceneTex"), 0);
+
 	for (int i = 0; i < POST_PASSES; ++i)
 	{
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,

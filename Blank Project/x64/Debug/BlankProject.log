@@ -1,20 +1,26 @@
 ﻿  Renderer.cpp
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(27,11): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(25,32): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(498,16): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(503,17): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(504,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(509,60): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(514,74): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(514,56): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(529,16): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(533,17): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(534,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(544,74): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(544,56): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(568,42): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(591,15): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(605,78): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(625,48): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(627,15): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Color.h(22,2): warning C4091: 'static ': ignored on left of 'Color' when no variable is declared
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(28,11): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(26,32): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(585,16): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(720,16): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(724,17): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(725,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(731,60): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(740,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(741,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(745,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(746,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(775,16): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(779,17): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(780,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(794,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(795,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(799,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(800,19): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(826,42): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(850,15): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(864,78): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(887,48): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\Blank Project\Renderer.cpp(889,15): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data
   BlankProject.vcxproj -> D:\cpp projects\CSC8502-CourseWork\x64\Debug\Blank Project.exe

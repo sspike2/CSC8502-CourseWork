@@ -202,9 +202,27 @@ void OGLRenderer::SetTextureFiltering(GLuint target, bool enableFiltering)
 		enableFiltering ? GL_LINEAR : GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//GL_LIn/
 }
 
 
+void OGLRenderer::SetTextureFilteringMipMaps(GLuint target)
+{
+	glBindTexture(GL_TEXTURE_2D, target);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_LINEAR_MIPMAP_LINEAR );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		GL_LINEAR );
+
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, 32.0f);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//GL_LIn/
+}
 
 /*
 Returns TRUE if everything in the constructor has gone to plan.
@@ -343,6 +361,33 @@ void OGLRenderer::DebugCallback(GLenum source, GLenum type, GLuint id, GLenum se
 
 	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + string(message) << "\n";
 }
+
+bool OGLRenderer::SetTextureToShader(GLuint texID, GLuint unit, const std::string& uniformName, Shader* s) {
+
+	GLint uniformID = glGetUniformLocation(s->GetProgram(), uniformName.c_str());
+	if (uniformID < 0) {
+		std::cout << "Trying to bind invalid 2D texture uniform!\n"; //Put breakpoint on this!
+		return false;
+	}
+	//You'll need to make 'currentShader' protected instead of private for this check...
+	if (currentShader != s) {
+		std::cout << "Trying to set shader uniform on wrong shader!\n"; //Put breakpoint on this!
+		return false;
+	}
+	glActiveTexture(GL_TEXTURE0 + unit); //A neat trick!
+	glBindTexture(GL_TEXTURE_2D, texID);
+	glUniform1i(uniformID, unit);
+	return true;
+}
+
+
+
+
+
+
+
+
+
 #endif
 
 

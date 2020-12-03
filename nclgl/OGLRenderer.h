@@ -65,7 +65,9 @@ protected:
 	void			SetTextureRepeating ( GLuint target , bool state );
 	void			SetTextureRepeating(GLuint target, bool state, bool isHorizontalAxis);
 	void            SetTextureFiltering(GLuint target, bool enableFiltering);
+	void            SetTextureFilteringMipMaps(GLuint target);
 	void            SetShaderLight ( const Light& l);
+	bool			SetTextureToShader(GLuint texID, GLuint unit, const std::string& uniformName, Shader* s);
 
 	void StartDebugGroup(const std::string& s) {
 		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, (GLsizei)s.length(), s.c_str());

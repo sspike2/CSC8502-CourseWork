@@ -5,6 +5,14 @@
 # include "Mesh.h"
 # include <vector >
 
+enum shaderType
+{
+	Standard,
+	Skinning
+};
+
+
+
 class SceneNode
 {
 public:
@@ -12,6 +20,13 @@ public:
 	~SceneNode(void);
 
 	char* name;
+	shaderType currentShader;
+	
+
+
+
+
+
 
 	void SetTransform(const Matrix4& matrix) { transform = matrix; }
 
@@ -20,6 +35,14 @@ public:
 
 	Vector4 GetColour() const { return colour; }
 	void SetColour(Vector4 c) { colour = c; }
+
+	Vector4 GetEmissionColour() const { return emissonColor; }
+	void SetEmissionColour(Vector4 c) { emissonColor = c; }
+
+
+
+
+	
 
 	Vector3 GetModelScale() const { return modelScale; }
 	void SetModelScale(Vector3 s) { modelScale = s; }
@@ -53,6 +76,11 @@ public:
 	void SetTexture(GLuint tex) { texture = tex; }
 	GLuint GetTexture() const { return texture; }
 
+	void   SetBumpTex(GLuint bump) { bumpTex = bump; }
+	GLuint GetBumpTex() const { return bumpTex; }
+
+	void SetEmissionTexture(GLuint tex) { emissionTex = tex; }
+	GLuint GetEmissionTex() const { return emissionTex; }
 
 	//void SetTextureTiling(Vector3 dfsdf){TextureMatrix}
 
@@ -76,11 +104,14 @@ protected:
 	Matrix4 transform;
 	Vector3 modelScale;
 	Vector4 colour;
+	Vector4 emissonColor;
 	std::vector < SceneNode*> children;
 	float distanceFromCamera;
 	float boundingRadius;
 	GLuint texture;
-
+	GLuint bumpTex;
+	//bool has emm/
+	GLuint emissionTex;
 
 	Matrix4 textureMatrix;
 };

@@ -10,6 +10,7 @@ uniform float lightRadius ;
  uniform vec3 lightPos ;
  uniform vec4 lightColour ;
 
+
  void main ( void ) {
  vec3 scale = vec3 ( lightRadius );
  vec3 worldPos = ( position * scale ) + lightPos ;

@@ -2,6 +2,7 @@
 
 uniform sampler2D depthTex ;
 uniform sampler2D normTex ;
+//uniform sampl
 
 uniform vec2 pixelSize ; // reciprocal of resolution
 uniform vec3 cameraPos ;

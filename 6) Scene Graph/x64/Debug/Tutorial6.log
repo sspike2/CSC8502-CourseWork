@@ -1,4 +1,5 @@
-﻿  Renderer.cpp
+﻿  CubeRobot.cpp
+  Renderer.cpp
+D:\cpp projects\CSC8502-CourseWork\6) Scene Graph\Renderer.cpp(8,60): error C2661: 'Camera::Camera': no overloaded function takes 3 arguments
   Tutorial6.cpp
   Generating Code...
-  Tutorial6.vcxproj -> D:\cpp projects\CSC8502-Tutorials\x64\Debug\Tutorial 06 - Scene Graph.exe
