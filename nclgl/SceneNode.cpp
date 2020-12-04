@@ -35,6 +35,8 @@ void SceneNode::Draw(const OGLRenderer& r)
 }
 void SceneNode::Update(float dt)
 {
+
+
 	if (parent)
 	{ // This node has a parent ...
 		worldTransform = parent->worldTransform * transform;
@@ -48,4 +50,6 @@ void SceneNode::Update(float dt)
 	{
 		(*i)->Update(dt);
 	}
+
+
 }

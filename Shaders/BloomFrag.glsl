@@ -18,7 +18,7 @@ const float scaleFactors[7] =
 void main(void) {
   vec4 bloom = vec4(0, 0, 0, 1);
   vec2 delta = vec2(0, 0);
-  vec4 diffuse = texture(diffuseTex, IN.texCoord);
+  vec4 diffuse = texture2D(diffuseTex, IN.texCoord.xy);
 
   if (isVertical == 1) {
     delta = dFdy(IN.texCoord);
@@ -29,10 +29,10 @@ void main(void) {
     vec2 offset = delta * (i - 3);
     vec4 tmp = texture2D(emissionTex, IN.texCoord.xy + offset);
     vec4 light = texture2D(lightTex, IN.texCoord.xy + offset);
-    tmp += light * 0.2;
+    tmp += light * 0.02;
 
     bloom += tmp * scaleFactors[i];
   }
 
-  fragColor = diffuse + bloom;
+  fragColor = bloom + diffuse;
 }

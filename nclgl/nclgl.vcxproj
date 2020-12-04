@@ -25,6 +25,7 @@
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="HeightMap.cpp" />
+    <ClCompile Include="Humanoid.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Matrix2.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="HeightMap.h" />
+    <ClInclude Include="Humanoid.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Light.h" />

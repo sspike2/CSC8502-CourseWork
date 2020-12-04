@@ -2,11 +2,13 @@
 # include "../nclgl/OGLRenderer.h"
 # include "../nclgl/Camera.h"
 # include "../nclgl/HeightMap.h"
-# include "../nclgl/SceneNode.h"
 # include "../nclgl/Frustum.h"
 # include "../nclgl/Color.h"
+# include "../nclgl/SceneNode.h"
+# include "../nclgl/SceneNodeSkinned.h"
 
-class Renderer : public OGLRenderer
+
+class Renderer: public OGLRenderer
 {
 public:
 	Renderer(Window& parent);
@@ -27,24 +29,26 @@ public:
 
 	void ToggleFogType();
 	void TogglePostProcessing();
+	void ToggleBloomFishEye();
 
 
 protected:
 	void FillBuffers(); //G- Buffer Fill Render Pass
 	void DrawPointLights(); // Lighting Render Pass
 	void CombineBuffers(); // Combination Render Pass
-	void PostProcess();
+	void Bloom();
 	void FishEyeEffect();
 	void PrintScene();
 
 
-						   // Make a new texture ...
+	// Make a new texture ...
 	void GenerateScreenTexture(GLuint& into, bool depth = false);
 
 
 	void InitializeTextures();
 
 	void GenerateRoadSegments();
+	void GenerateHumanoids();
 	void GenerateBuildings();
 	void GenerateStreetLights();
 
@@ -55,14 +59,17 @@ protected:
 
 	int  fogType = 2;
 	bool shouldRenderPostProcess = false;
+	bool isBloomOn = true;
 
 
 	Shader* sceneShader; // Shader to fill our GBuffers
 	Shader* pointlightShader; // Shader to calculate lighting
 	Shader* combineShader; // shader to stick it all 
 	Shader* skyboxShader; // shader to stick it all together
-	Shader* SkinningShader; //Humanoids
-	Shader* postProcessShader; // bloom
+	Shader* skinningShader; //Humanoids
+	Shader* bloomShader; // bloom
+	Shader* FishEyeShader; // FishEye
+
 	Shader* textureShader;	// final output
 
 
@@ -100,6 +107,11 @@ protected:
 	Light* pointLights; // Array of lighting data
 
 
+	//humanoid things
+
+	Mesh* humanoidMesh;
+	MeshAnimation* anim;
+	MeshMaterial* mat;
 
 
 
@@ -108,8 +120,6 @@ protected:
 
 
 
-
-	
 	Mesh* sphere; // Light volume
 	Mesh* quad; // To draw a full - screen quad
 	Mesh* cube;
@@ -124,7 +134,7 @@ protected:
 	GLuint streetLightTex;
 	GLuint streetLightEmiss;
 
-	
+
 
 	GLuint Skybox;
 
@@ -144,7 +154,7 @@ protected:
 	void ClearNodeLists();
 	void DrawNodes();
 	void DrawNode(SceneNode* n);
-
+	void DrawSkinnedNode(SceneNode* n);
 
 
 

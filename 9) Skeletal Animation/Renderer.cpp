@@ -8,7 +8,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 
 	projMatrix = Matrix4::Perspective(1.0f, 10000.0f,
 		(float)width / (float)height, 45.0f);
-	camera = new Camera(-3, 0.0f, Vector3(0, 1.40f, 4.40f));
+	camera = new Camera(-3, 0.0f, Vector3(0, 1.40f, 4.40f), 10);
 
 	shader = new Shader("SkinningVertex.glsl", "texturedFragment.glsl");
 
@@ -76,7 +76,7 @@ void Renderer::RenderScene()
 		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 	}
 
-	int j = glGetUniformLocation(shader->GetProgram(),"joints");
+	int j = glGetUniformLocation(shader->GetProgram(), "joints");
 	glUniformMatrix4fv(j, frameMatrices.size(), false,
 		(float*)frameMatrices.data());
 	for (int i = 0; i < mesh->GetSubMeshCount(); ++i)

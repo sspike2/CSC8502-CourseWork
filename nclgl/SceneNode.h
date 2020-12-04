@@ -4,6 +4,7 @@
 # include "Vector4.h"
 # include "Mesh.h"
 # include <vector >
+#include "Humanoid.h"
 
 enum shaderType
 {
@@ -96,10 +97,13 @@ public:
 	const Matrix4& GetTextureMatrix() const { return textureMatrix; }
 	void SetTextureMatrix(const Matrix4& textureMatrix) { this->textureMatrix = textureMatrix; }
 
+	Humanoid* humanoid;
+
+
 
 protected:
-	SceneNode* parent;
 	Mesh* mesh;
+	SceneNode* parent;
 	Matrix4 worldTransform;
 	Matrix4 transform;
 	Vector3 modelScale;

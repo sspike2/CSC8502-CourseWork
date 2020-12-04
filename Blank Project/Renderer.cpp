@@ -10,6 +10,14 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	cube = Mesh::LoadFromMeshFile("cube.msh");
 	streetLightMesh = Mesh::LoadFromMeshFile("/Sush/StreetLight.msh");
 
+	humanoidMesh = Mesh::LoadFromMeshFile("Role_T.msh");
+	anim = new MeshAnimation("Role_T.anm");
+	mat = new MeshMaterial("Role_T.mat");
+
+
+
+
+
 
 
 	InitializeTextures();
@@ -46,12 +54,17 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	skyboxShader = new Shader(
 		"skyboxVertex.glsl", "skyboxFragment.glsl");
 
-	postProcessShader = new Shader("FishEyeVert.glsl",
-		"FishEyeFrag.glsl");
+	bloomShader = new Shader("BloomVert.glsl",
+		"BloomFrag.glsl");
 
+	FishEyeShader = new Shader("FishEyeVert.glsl",
+		"FishEyeFrag.glsl");
 
 	textureShader = new Shader("TexturedVertex.glsl",
 		"TexturedFragment.glsl");
+
+	skinningShader = new Shader("SkinningVertex.glsl",
+		"texturedFragment.glsl");
 
 
 
@@ -62,7 +75,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	point = pointlightShader->LoadSuccess();
 	combine = combineShader->LoadSuccess();
 	sky = skyboxShader->LoadSuccess();
-	post = postProcessShader->LoadSuccess();
+	post = bloomShader->LoadSuccess();
 
 	if (!scene || !point || !combine || !sky || !post)
 	{
@@ -83,6 +96,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	GenerateRoadSegments();
 	GenerateBuildings();
 	GenerateStreetLights();
+	//GenerateHumanoids();
 
 
 
@@ -180,6 +194,10 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
+
+	BuildNodeLists(root);
+	SortNodeLists();
+
 	init = true;
 }
 Renderer ::~Renderer(void)
@@ -189,8 +207,9 @@ Renderer ::~Renderer(void)
 	delete pointlightShader;
 	delete skyboxShader;
 	delete textureShader;
-	delete postProcessShader;
-	//delete SkinningShader;
+	delete bloomShader;
+	delete FishEyeShader;
+	delete skinningShader;
 
 
 	delete camera;
@@ -210,6 +229,9 @@ Renderer ::~Renderer(void)
 	glDeleteFramebuffers(1, &pointLightFBO);
 	glDeleteFramebuffers(1, &combineFBO);
 	glDeleteFramebuffers(1, &processFBO);
+
+
+
 
 }
 void Renderer::GenerateScreenTexture(GLuint& into, bool depth)
@@ -237,6 +259,21 @@ void Renderer::UpdateScene(float dt)
 	//frameFrustum.FromMatrix(projMatrix * viewMatrix);
 	root->Update(dt);
 
+	for (const auto& i : SkinnedMesh)
+	{
+		i->humanoid->frameTime -= dt;
+
+		while (i->humanoid->frameTime < 0.0f)
+		{
+			i->humanoid->currentFrame = (i->humanoid->currentFrame + 1) %
+				i->humanoid->getMeshAnimation()->GetFrameCount();
+
+			i->humanoid->frameTime += 1.0f / i->humanoid->getMeshAnimation()->GetFrameRate();
+		}
+
+	}
+
+
 
 }
 void Renderer::RenderScene()
@@ -244,21 +281,27 @@ void Renderer::RenderScene()
 
 
 
-	BuildNodeLists(root);
-	SortNodeLists();
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	FillBuffers();
-	ClearNodeLists();
 	DrawPointLights();
 	CombineBuffers();
 	if (shouldRenderPostProcess)
 	{
-		//PostProcess();
-		FishEyeEffect();
+		if (isBloomOn)
+		{
+			Bloom();
+		}
+		else
+		{
+			FishEyeEffect();
+		}
 	}
+
 	PrintScene();
 
 
+	//ClearNodeLists();
 }
 void Renderer::FillBuffers()
 {
@@ -267,7 +310,7 @@ void Renderer::FillBuffers()
 
 	modelMatrix.ToIdentity();
 	viewMatrix = camera->BuildViewMatrix();
-	projMatrix = Matrix4::Perspective(1.0f, 1000000.0f,
+	projMatrix = Matrix4::Perspective(1.0f, 100000.0f,
 		(float)width / (float)height, 45.0f);
 
 	DrawSkybox();
@@ -275,18 +318,13 @@ void Renderer::FillBuffers()
 	//UpdateShaderMatrices();
 
 
-	BindShader(sceneShader);
-	UpdateShaderMatrices();
 	DrawNodes();
-
-
-
-
-
 	//heightMap->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+
 void Renderer::DrawPointLights()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, pointLightFBO);
@@ -352,6 +390,8 @@ void Renderer::DrawPointLights()
 }
 void Renderer::CombineBuffers()
 {
+
+
 	glBindFramebuffer(GL_FRAMEBUFFER, combineFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -384,7 +424,7 @@ void Renderer::FishEyeEffect()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, processFBO);
 
-	BindShader(postProcessShader);
+	BindShader(FishEyeShader);
 	modelMatrix.ToIdentity();
 	viewMatrix.ToIdentity();
 	projMatrix.ToIdentity();
@@ -392,7 +432,7 @@ void Renderer::FishEyeEffect()
 
 
 	glUniform1i(glGetUniformLocation(
-		postProcessShader->GetProgram(), "diffuseTex"), 1);
+		FishEyeShader->GetProgram(), "diffuseTex"), 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bufferCombineTex);
 
@@ -402,11 +442,12 @@ void Renderer::FishEyeEffect()
 }
 
 
-void Renderer::PostProcess()
+void Renderer::Bloom()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, processFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	BindShader(postProcessShader);
+	BindShader(bloomShader);
 	modelMatrix.ToIdentity();
 	viewMatrix.ToIdentity();
 	projMatrix.ToIdentity();
@@ -414,17 +455,17 @@ void Renderer::PostProcess()
 
 
 	glUniform1i(glGetUniformLocation(
-		postProcessShader->GetProgram(), "emissionTex"), 0);
+		bloomShader->GetProgram(), "emissionTex"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, bufferEmissionTex);
 
 	glUniform1i(glGetUniformLocation(
-		postProcessShader->GetProgram(), "diffuseTex"), 1);
+		bloomShader->GetProgram(), "diffuseTex"), 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bufferCombineTex);
 
 	glUniform1i(glGetUniformLocation(
-		postProcessShader->GetProgram(), "lightTex"), 2);
+		bloomShader->GetProgram(), "lightTex"), 2);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, lightDiffuseTex);
 
@@ -435,13 +476,13 @@ void Renderer::PostProcess()
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_2D, processTex[1], 0);
-		glUniform1i(glGetUniformLocation(postProcessShader->GetProgram(),
+		glUniform1i(glGetUniformLocation(bloomShader->GetProgram(),
 			"isVertical"), 0);
 
 		glBindTexture(GL_TEXTURE_2D, processTex[0]);
 		quad->Draw();
 		// Now to swap the colour buffers , and do the second blur pass
-		glUniform1i(glGetUniformLocation(postProcessShader->GetProgram(),
+		glUniform1i(glGetUniformLocation(bloomShader->GetProgram(),
 			"isHorizontal"), 1);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_2D, processTex[0], 0);
@@ -449,14 +490,13 @@ void Renderer::PostProcess()
 		quad->Draw();
 	}
 
-
-
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Renderer::PrintScene()
 {
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	BindShader(textureShader);
 
 	modelMatrix.ToIdentity();
@@ -468,11 +508,19 @@ void Renderer::PrintScene()
 
 	if (shouldRenderPostProcess)
 	{
+
 		glUniform1i(glGetUniformLocation(
 			textureShader->GetProgram(), "diffuseTex"), 0);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, processTex[1]);
+		glBindTexture(GL_TEXTURE_2D, processTex[0]);
 
+		/*if (bloomShader)
+		{*/
+		/*glUniform1i(glGetUniformLocation(
+			textureShader->GetProgram(), "diffuseTex2"), 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, processTex[1]);*/
+		//}
 	}
 	else
 	{
@@ -483,7 +531,7 @@ void Renderer::PrintScene()
 	}
 
 	quad->Draw();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -521,8 +569,11 @@ void Renderer::BuildNodeLists(SceneNode* from)
 	{
 		BuildNodeLists((*i));
 	}
-
 }
+
+
+
+
 
 
 void Renderer::SortNodeLists()
@@ -538,16 +589,22 @@ void Renderer::SortNodeLists()
 
 void Renderer::DrawNodes()
 {
+	BindShader(sceneShader);
+	UpdateShaderMatrices();
 	for (const auto& i : nodeList)
 	{
 		DrawNode(i);
 
 	}
-	for (const auto& i : SkinnedMesh)
-	{
-		DrawNode(i);
 
-	}
+	/*BindShader(skinningShader);
+	UpdateShaderMatrices();*/
+
+
+	/*for (const auto& i : SkinnedMesh)
+	{
+		DrawSkinnedNode(i);
+	}*/
 
 }
 
@@ -585,10 +642,6 @@ void Renderer::DrawNode(SceneNode* n)
 			"fogType"), fogType);
 
 
-
-
-
-
 		Matrix4 model = n->GetWorldTransform() *
 			Matrix4::Scale(n->GetModelScale());
 		glUniformMatrix4fv(
@@ -605,6 +658,59 @@ void Renderer::DrawNode(SceneNode* n)
 
 	}
 }
+void Renderer::DrawSkinnedNode(SceneNode* n)
+{
+	if (n->GetMesh())
+	{
+		Matrix4 model = n->GetWorldTransform() *
+			Matrix4::Scale(n->GetModelScale());
+		glUniformMatrix4fv(
+			glGetUniformLocation(sceneShader->GetProgram(),
+				"modelMatrix"), 1, false, model.values);
+
+
+		modelMatrix = model;
+		//Matrix4::Translation(Vector3(-400, 200, -200)) *
+		//Matrix4::Scale(Vector3(300, 300, 300));
+
+		UpdateShaderMatrices();
+		nodeTex = n->GetTexture();
+		SetTextureToShader(nodeTex, 0, "diffuseTex", skinningShader);
+
+
+
+
+		//glUniform3fv(glGetUniformLocation(pointlightShader->GetProgram(),
+			//"position"), 1, (float*)&n->GetTransform().GetPositionVector());
+
+
+
+
+		vector < Matrix4 > frameMatrices;
+		const Matrix4* invBindPose = n->GetMesh()->GetInverseBindPose();
+		const Matrix4* frameData = anim->GetJointData(n->humanoid->currentFrame);
+
+		for (unsigned int i = 0; i < n->GetMesh()->GetJointCount(); ++i)
+		{
+			frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
+		}
+
+		int j = glGetUniformLocation(skinningShader->GetProgram(), "joints");
+		glUniformMatrix4fv(j, frameMatrices.size(), false,
+			(float*)frameMatrices.data());
+		for (int i = 0; i < n->GetMesh()->GetSubMeshCount(); ++i)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, n->humanoid->matTextures[i]);
+			n->GetMesh()->DrawSubMesh(i);
+		}
+
+
+
+	}
+}
+
+
 
 
 void Renderer::ClearNodeLists()
@@ -697,6 +803,41 @@ void Renderer::GenerateRoadSegments()
 		road->name = "road";
 		root->AddChild(road);
 	}
+}
+
+void Renderer::GenerateHumanoids()
+{
+	SceneNode* node = new SceneNode(humanoidMesh);
+	node->humanoid = new Humanoid(anim, mat);
+
+	node->currentShader = shaderType::Skinning;
+
+	Vector3 pos = Vector3(-1000, 0, -200);
+
+	node->SetTransform(Matrix4::Translation(pos));// *Matrix4::Scale(Vector3(30, 30, 30)));
+	node->SetModelScale(Vector3(200, 200, 200));
+	for (int i = 0; i < node->GetMesh()->GetSubMeshCount(); ++i)
+	{
+		const MeshMaterialEntry* matEntry =
+			node->humanoid->getMeshMaterial()->GetMaterialForLayer(i);
+
+		const string* filename = nullptr;
+		matEntry->GetEntry("Diffuse", &filename);
+		string path = TEXTUREDIR + *filename;
+		GLuint texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO,
+			SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
+		node->humanoid->matTextures.emplace_back(texID);
+	}
+
+
+
+	root->AddChild(node);
+
+
+	//node->SetMesh()
+	//H
+
+
 }
 
 void Renderer::GenerateBuildings()
@@ -953,5 +1094,14 @@ void Renderer::TogglePostProcessing()
 {
 	shouldRenderPostProcess = !shouldRenderPostProcess;
 }
+
+void Renderer::ToggleBloomFishEye()
+{
+	isBloomOn = !isBloomOn;
+}
+
+
+
+
 
 
