@@ -96,7 +96,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 	GenerateRoadSegments();
 	GenerateBuildings();
 	GenerateStreetLights();
-	//GenerateHumanoids();
+	GenerateHumanoids();
 
 
 
@@ -271,6 +271,13 @@ void Renderer::UpdateScene(float dt)
 			i->humanoid->frameTime += 1.0f / i->humanoid->getMeshAnimation()->GetFrameRate();
 		}
 
+		Vector3 currpos = i->GetTransform().GetPositionVector();
+		currpos += (i->humanoid->direction) * (i->humanoid->speed * dt);
+
+		i->SetTransform(Matrix4::Translation(currpos) * Matrix4::Rotation(180, Vector3(0, 1, 0)));
+
+
+
 	}
 
 
@@ -316,7 +323,6 @@ void Renderer::FillBuffers()
 	DrawSkybox();
 
 	//UpdateShaderMatrices();
-
 
 	DrawNodes();
 	//heightMap->Draw();
@@ -587,24 +593,24 @@ void Renderer::SortNodeLists()
 
 }
 
+
+
 void Renderer::DrawNodes()
 {
+
 	BindShader(sceneShader);
 	UpdateShaderMatrices();
 	for (const auto& i : nodeList)
 	{
 		DrawNode(i);
-
 	}
 
-	/*BindShader(skinningShader);
-	UpdateShaderMatrices();*/
-
-
-	/*for (const auto& i : SkinnedMesh)
+	BindShader(skinningShader);
+	UpdateShaderMatrices();
+	for (const auto& i : SkinnedMesh)
 	{
 		DrawSkinnedNode(i);
-	}*/
+	}
 
 }
 
@@ -757,7 +763,7 @@ void Renderer::InitializeTextures()
 		SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
 
 
-	//emissTex = 
+	//emissTex =
 
 
 
@@ -807,37 +813,44 @@ void Renderer::GenerateRoadSegments()
 
 void Renderer::GenerateHumanoids()
 {
-	SceneNode* node = new SceneNode(humanoidMesh);
-	node->humanoid = new Humanoid(anim, mat);
-
-	node->currentShader = shaderType::Skinning;
-
-	Vector3 pos = Vector3(-1000, 0, -200);
-
-	node->SetTransform(Matrix4::Translation(pos));// *Matrix4::Scale(Vector3(30, 30, 30)));
-	node->SetModelScale(Vector3(200, 200, 200));
-	for (int i = 0; i < node->GetMesh()->GetSubMeshCount(); ++i)
+	for (int i = 0; i < 2; i++)
 	{
-		const MeshMaterialEntry* matEntry =
-			node->humanoid->getMeshMaterial()->GetMaterialForLayer(i);
 
-		const string* filename = nullptr;
-		matEntry->GetEntry("Diffuse", &filename);
-		string path = TEXTUREDIR + *filename;
-		GLuint texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO,
-			SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
-		node->humanoid->matTextures.emplace_back(texID);
+
+		SceneNode* node = new SceneNode(humanoidMesh);
+		node->humanoid = new Humanoid(anim, mat);
+
+		node->humanoid->speed = 300 + rand() % 50;
+		node->humanoid->direction = Vector3(0, 0, -1);
+
+		node->currentShader = shaderType::Skinning;
+
+		Vector3 pos = Vector3(i == 0 ? -2500 : 1000, -500, -200);
+
+		node->SetTransform(Matrix4::Translation(pos) * Matrix4::Rotation(180, Vector3(0, 1, 0)));// *Matrix4::Scale(Vector3(30, 30, 30)));
+		node->SetModelScale(Vector3(200, 200, 200));
+		for (int i = 0; i < node->GetMesh()->GetSubMeshCount(); ++i)
+		{
+			const MeshMaterialEntry* matEntry =
+				node->humanoid->getMeshMaterial()->GetMaterialForLayer(i);
+
+			const string* filename = nullptr;
+			matEntry->GetEntry("Diffuse", &filename);
+			string path = TEXTUREDIR + *filename;
+			GLuint texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO,
+				SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
+			node->humanoid->matTextures.emplace_back(texID);
+		}
+
+
+
+		root->AddChild(node);
+
+
+		//node->SetMesh()
+		//H
+
 	}
-
-
-
-	root->AddChild(node);
-
-
-	//node->SetMesh()
-	//H
-
-
 }
 
 void Renderer::GenerateBuildings()

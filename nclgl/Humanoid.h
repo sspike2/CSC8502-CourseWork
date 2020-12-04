@@ -23,6 +23,8 @@ public:
 	int currentFrame;
 	float frameTime;
 
+	float speed;
+	Vector3 direction;
 
 protected:
 	MeshAnimation* anim;

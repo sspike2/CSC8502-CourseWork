@@ -151,6 +151,7 @@ protected:
 
 	void BuildNodeLists(SceneNode* from);
 	void SortNodeLists();
+	void DrawStaticNodes();
 	void ClearNodeLists();
 	void DrawNodes();
 	void DrawNode(SceneNode* n);
