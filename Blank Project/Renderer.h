@@ -32,6 +32,8 @@ public:
 	void ToggleBloomFishEye();
 
 
+	Camera* camera; // Our usual camera
+
 protected:
 	void FillBuffers(); //G- Buffer Fill Render Pass
 	void DrawPointLights(); // Lighting Render Pass
@@ -125,7 +127,6 @@ protected:
 	Mesh* cube;
 	Mesh* streetLightMesh;
 
-	Camera* camera; // Our usual camera
 
 	GLuint roadTex;
 	GLuint roadBump;

@@ -64,18 +64,19 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent)
 		"TexturedFragment.glsl");
 
 	skinningShader = new Shader("SkinningVertex.glsl",
-		"texturedFragment.glsl");
+		"TexturedFragment.glsl");
 
 
 
 
-
+	//multiple bools to check exactly shader which is causing issue
 	bool scene, point, combine, sky, post;
 	scene = sceneShader->LoadSuccess();
 	point = pointlightShader->LoadSuccess();
 	combine = combineShader->LoadSuccess();
 	sky = skyboxShader->LoadSuccess();
 	post = bloomShader->LoadSuccess();
+	bool skinning = skinningShader->LoadSuccess();
 
 	if (!scene || !point || !combine || !sky || !post)
 	{

@@ -47,6 +47,29 @@ int main()
 
 
 
+		// starting position
+		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_1))
+		{
+			//renderer.camera->SetPosition
+
+			renderer.camera->WarpTo(Vector3(-1000, 300, 0), 0, 0);
+		}
+
+		// warp to end of road
+		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_2))
+		{
+			renderer.camera->WarpTo(Vector3(-1000, 300, -80000), 0, 180);
+		}
+
+		//Bird's eye view of city
+		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_3))
+		{
+			renderer.camera->WarpTo(Vector3(-1000, 25000, 0), -50, 0);
+		}
+
+
+
+
 
 		renderer.UpdateScene(w.GetTimer()->GetTimeDeltaSeconds());
 		renderer.RenderScene();
@@ -57,5 +80,11 @@ int main()
 		}
 	}
 
+
 	return 0;
 }
+
+
+
+
+

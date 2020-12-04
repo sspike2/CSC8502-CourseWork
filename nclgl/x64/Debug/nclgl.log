@@ -1,2 +1,11 @@
 ﻿  Camera.cpp
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(73,49): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(73,43): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(73,37): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(123,49): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(123,43): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(123,37): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(219,33): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(219,27): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+D:\cpp projects\CSC8502-CourseWork\nclgl\Camera.cpp(219,21): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
   nclgl.vcxproj -> D:\cpp projects\CSC8502-CourseWork\x64\Debug\nclgl.lib
