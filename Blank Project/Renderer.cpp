@@ -825,7 +825,7 @@ void Renderer::GenerateHumanoids()
 
 		node->currentShader = shaderType::Skinning;
 
-		Vector3 pos = Vector3(i == 0 ? -2500 : 1000, -500, -200);
+		Vector3 pos = Vector3(i == 0 ? -2500 : 1000, 00, -200);
 
 		node->SetTransform(Matrix4::Translation(pos) * Matrix4::Rotation(180, Vector3(0, 1, 0)));// *Matrix4::Scale(Vector3(30, 30, 30)));
 		node->SetModelScale(Vector3(200, 200, 200));

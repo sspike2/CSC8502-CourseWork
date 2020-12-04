@@ -39,4 +39,5 @@ protected:
 	float pitch;
 	Vector3 position; // Set to 0,0,0 by Vector3 constructor ;)
 	float speed;
+	bool isAutomated = true;
 };

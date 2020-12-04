@@ -25,6 +25,14 @@ void Camera::UpdateCamera(float dt)
 	Vector3 forward = rotation * Vector3(0, 0, -1);
 	Vector3 right = rotation * Vector3(1, 0, 0);
 
+	if (isAutomated)
+	{
+		position += (forward * speed / 4) * dt;
+	}
+
+
+
+
 	if (Window::GetKeyboard()->KeyDown(KEYBOARD_W))
 	{
 		position += forward * (speed * dt);
@@ -44,6 +52,10 @@ void Camera::UpdateCamera(float dt)
 
 	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SPACE))
 	{
+		if (isAutomated)
+		{
+			isAutomated = false;
+		}
 		position.y += (speed * dt);
 	}
 

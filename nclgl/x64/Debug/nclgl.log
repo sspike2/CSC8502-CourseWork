@@ -1,5 +1,2 @@
-﻿  Frustum.cpp
-  Humanoid.cpp
-  SceneNode.cpp
-  Generating Code...
+﻿  Camera.cpp
   nclgl.vcxproj -> D:\cpp projects\CSC8502-CourseWork\x64\Debug\nclgl.lib
